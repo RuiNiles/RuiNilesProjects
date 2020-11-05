@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>NaughtsAndCrosses</title>
+    <script>
+        //Initial game conditions.
+        turn = 1;
+        gridSize = 3;
+        gameOver = false;
+
+        //Calls for table to be loaded once the html page has been fully loaded.
+        document.addEventListener("DOMContentLoaded", function() {
+            loadTable();
+        });
+
+        function loadTable() {
+            //set initial game conditions in the event of a restart.
+            turn = 1;
+            gameOver = false;
+            table = document.getElementById("container");
+            table.innerHTML = ""; //empty table.
+            table.appendChild(document.createElement("caption"));
+            //create each row and cell and add them to the table.
+            for (i = 1; i <= gridSize; i++) {
+                newRow = document.createElement("tr");
+                newRow.id = "row" + i; //set IDs to row1-3.
+                for (y = 1; y <= gridSize; y++) {
+                    newBox = document.createElement("td");
+                    newBox.onclick = markBox; // all cells call the mark function when clicked.
+                    newRow.appendChild(newBox);
+                }
+                table.appendChild(newRow);
+            }
+        }
+
+        function markBox() {
+            //mark the selected box if it is empty and the game hasn't finished.
+            if ((this.innerHTML == "") && (!gameOver)) {
+                if (turn % 2 == 0) { // every even turn is O.
+                    this.style = "color: green";
+                    this.innerHTML = "O";
+                    player = "O"
+                } else {
+                    this.style = "color: red";
+                    this.innerHTML = "X";
+                    player = "X"
+                }
+                //after the fifth turn check to see if either player has won.
+                if (turn > 4) checkWin(player);
+                turn++; //increment turn.
+            }
+        }
+
+        function checkWin(player) {
+            //param the player who just took their turn, "X" or "O".
+            var winner = false;
+            row1 = document.getElementById("row1").childNodes;
+            row2 = document.getElementById("row2").childNodes;
+            row3 = document.getElementById("row3").childNodes;
+            //for each row and column check to see if the contents of each cell match and are not empty.
+            //if so set the row or column to the win style (yellow background).
+            for (i = 0; i < 3; i++) {
+                row = document.getElementById("row" + (i + 1)).childNodes;
+                if ((row[0].innerHTML == row[1].innerHTML) && (row[0].innerHTML == row[2].innerHTML) && (row[0].innerHTML != "")) {
+                    winner = true;
+                    setWinStyle(row[0], row[1], row[2]);
+                } else if ((row1[i].innerHTML == row2[i].innerHTML) && (row1[i].innerHTML == row3[i].innerHTML) && (row1[i].innerHTML != "")) {
+                    winner = true;
+                    setWinStyle(row1[i], row2[i], row3[i]);
+                }
+            }
+            //Check both diagonal win states.
+            //if one is found set the cells in them to the win style (yellow background).
+            if ((row2[1].innerHTML == row1[0].innerHTML) && (row2[1].innerHTML == row3[2].innerHTML) && (row2[1].innerHTML != "")) {
+                winner = true;
+                setWinStyle(row1[0], row2[1], row3[2]);
+            } else if ((row2[1].innerHTML == row1[2].innerHTML) && (row2[1].innerHTML == row3[0].innerHTML) && (row2[1].innerHTML != "")) {
+                winner = true;
+                setWinStyle(row1[2], row2[1], row3[0]);
+            }
+            //if a win state is found game over and display win message.
+            //if no win state is found and out of turns game over and display draw message.
+            if (winner) {
+                gameOver = true;
+                displayWinMessage(player);
+            } else if (turn > 8) {
+                displayDrawMessage();
+                gameOver = true;
+            }
+        }
+
+        function setWinStyle(b1, b2, b3) {
+            //set the backgrounds of the winning cells to yellow.
+            //param three winning cells.
+            b1.style.backgroundColor = b2.style.backgroundColor = b3.style.backgroundColor = "yellow";
+        }
+
+        function displayWinMessage(player) {
+            //set text in table caption to the correct win message.
+            //param winning player, "X" or "O".
+            document.getElementById("container").caption.innerHTML = "Player " + player + " wins!";
+        }
+
+        function displayDrawMessage() {
+            //set text in table caption to the draw message.
+            document.getElementById("container").caption.innerHTML = "Game Over, No winner";
+        }
+    </script>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        
+        td {
+            border: solid 1px;
+            width: 100px;
+            height: 100px;
+            text-align: center;
+            font-size: 50px;
+        }
+        
+        table {
+            border-spacing: 25px;
+            padding: 5px;
+        }
+        
+        caption {
+            height: 10px;
+            font-size: 30px;
+            font-weight: 700;
+        }
+        
+        button {
+            margin-left: 30px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <table id="container">
+    </table>
+    <button onclick="loadTable()">Reset</button>
+
+</body>
+
+</html>
