@@ -1,0 +1,8 @@
+These are my genetic algorithms for the black box and knapsack problems.
+
+To inspect the code open the example.java file in this directory. 
+Solution01 addresses the black box problem while Solution02 addresses the knapsack problem.
+
+To run the demo for the code download all .class and .java files and in a command line compile them and run example.java
+
+Thank You.
